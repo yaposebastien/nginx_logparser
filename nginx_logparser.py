@@ -4,9 +4,7 @@ from __future__ import absolute_import, division, print_function
 
 
 import paramiko
-import weakref
 import os
-import json
 import signal
 import subprocess
 
@@ -39,15 +37,8 @@ class Logparser:
            print(subprocess.call(['/usr/bin/geoiplookup', str(ip)]))
        
 
-
-
 if __name__ == '__main__':
 
-    print(os.environ.get('WEBSERVER_USER'))
-    print(os.environ.get('WEBSERVER_PASSWD'))
-    print(os.environ.get('WEBSERVER_PORT'))
-    print(os.environ.get('WEBSERVER_IP'))
-   
     Logparser.parseLogWebServer(os.environ.get('WEBSERVER_IP'), os.environ.get('WEBSERVER_PORT'), 
                                         os.environ.get('WEBSERVER_USER'), os.environ.get('WEBSERVER_PASSWD'))
         
