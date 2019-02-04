@@ -34,28 +34,33 @@ class Logparser:
        for singleLog in stdout:
            Logparser.extractRemoteAddress(singleLog)
            Logparser.extractCountry(singleLog)
+           Logparser.extractTimeLocal(singleLog)
+
+           print("Remote addr:" +str(Logparser.extractRemoteAddress(singleLog)))
+           print("Remote country: " +str(Logparser.extractCountry(singleLog)))
+           print("Remote time local: " +str(Logparser.extractTimeLocal(singleLog)))
            
-           '''
-           print('IP address: ' +str(singleLog))
-           checkCountry = subprocess.Popen(['/usr/bin/geoiplookup', str(singleLog)], stdout=subprocess.PIPE)
-           country = checkCountry.stdout.read()
-           print('Country is:' + str(country))
-            '''
     #Function to extract the remote IP address of the single line of log
     def extractRemoteAddress(Param_singleLog):
         remote_add_schema = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
         find_remote_addr = remote_add_schema.findall(Param_singleLog)
         for iplog in find_remote_addr:
-            print(iplog)
+            #print(iplog)
+            return iplog
 
-    #Function to extract the country of the remote IP address
+    #Function to extract the country of the remote IP address of Nginx
     def extractCountry(Param_singleLog):
         checkCountry = subprocess.Popen(['/usr/bin/geoiplookup', str(Param_singleLog)], stdout=subprocess.PIPE)
         country = checkCountry.stdout.read()
-        print('Country is:' + str(country))
+        #print('Country is:' + str(country))
+        return country
 
-
-    #def extractTimeLocal():
+    #Function to extract the date and time of Nginx log
+    def extractTimeLocal(Param_singleLog):
+        time_local_schema = re.compile('[\d{1,2}\/\W]')
+        find_time_local = time_local_schema.findall(Param_singleLog)
+        for time_local in find_time_local:
+            return time_local
 
     #def extractHttpUserAgent():
 
