@@ -32,6 +32,7 @@ class Logparser:
       
        #Defining a list to store each IP
        for singleLog in stdout:
+           print(singleLog)
            Logparser.extractRemoteAddress(singleLog)
            Logparser.extractCountry(singleLog)
            Logparser.extractTimeLocal(singleLog)
@@ -45,28 +46,26 @@ class Logparser:
         remote_add_schema = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
         find_remote_addr = remote_add_schema.findall(Param_singleLog)
         for iplog in find_remote_addr:
-            #print(iplog)
             return iplog
 
     #Function to extract the country of the remote IP address of Nginx
     def extractCountry(Param_singleLog):
         checkCountry = subprocess.Popen(['/usr/bin/geoiplookup', str(Param_singleLog)], stdout=subprocess.PIPE)
         country = checkCountry.stdout.read()
-        #print('Country is:' + str(country))
-        return country
+        return country[23:]
 
     #Function to extract the date and time of Nginx log
     def extractTimeLocal(Param_singleLog):
-        time_local_schema = re.compile('[\d{1,2}\/\W]')
-        find_time_local = time_local_schema.findall(Param_singleLog)
-        for time_local in find_time_local:
+        time_local_schema = re.compile('\d{1,2}\/\D{3}\/\d{4}\:\d{2}\:\d{2}\:\d{2}')
+        time_local = time_local_schema.findall(Param_singleLog)
+        for time_local in time_local:
             return time_local
+       
+
 
     #def extractHttpUserAgent():
 
     
-    
-
 
 if __name__ == '__main__':
 
