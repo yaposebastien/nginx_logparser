@@ -17,9 +17,11 @@ signal.signal(signal.SIGINT, signal.SIG_DFL) # Interruption de clavier
 
 #Defining our class LogParser
 class Logparser:
-    def __init__(self, remote_addr, time_local, http_user_agent, countryLog):
+    def __init__(self, remote_addr, time_local, request, status, http_user_agent, countryLog):
         self.remote_addr = remote_addr
         self.time_local = time_local
+        self.request = request
+        self.status =  status
         self.http_user_agent = http_user_agent
         self.countryLog = countryLog
 
@@ -28,18 +30,27 @@ class Logparser:
        sshClient.set_missing_host_key_policy(paramiko.AutoAddPolicy())    # AutoAddPolicy automatically adding the hostname and new host key
        sshClient.load_system_host_keys()
        sshClient.connect(hostname, port, username, password)
-       stdin, stdout, stderr = sshClient.exec_command('cat /var/log/nginx/access.log | cut -d "-" -f 1,3,5| uniq') #Catch the IP, date and time
+       stdin, stdout, stderr = sshClient.exec_command('cat /var/log/nginx/access.log') #Catch the IP, date and time
       
        #Defining a list to store each IP
        for singleLog in stdout:
-           print(singleLog)
+          
+          
            Logparser.extractRemoteAddress(singleLog)
            Logparser.extractCountry(singleLog)
            Logparser.extractTimeLocal(singleLog)
+           Logparser.extractRequest(singleLog)
+           Logparser.extractStatus(singleLog)
+           Logparser.extractHttpUserAgent(singleLog)
 
            print("Remote addr:" +str(Logparser.extractRemoteAddress(singleLog)))
            print("Remote country: " +str(Logparser.extractCountry(singleLog)))
            print("Remote time local: " +str(Logparser.extractTimeLocal(singleLog)))
+           print("Request: " +str(Logparser.extractRequest(singleLog)))
+           print("Status: " +str(Logparser.extractStatus(singleLog)))
+           print("Http user agent: " +str(Logparser.extractHttpUserAgent(singleLog)))
+           
+
            
     #Function to extract the remote IP address of the single line of log
     def extractRemoteAddress(Param_singleLog):
@@ -60,12 +71,33 @@ class Logparser:
         time_local = time_local_schema.findall(Param_singleLog)
         for time_local in time_local:
             return time_local
-       
 
-
-    #def extractHttpUserAgent():
-
+    #Function to extract the request of the log
+    def extractRequest(Param_singleLog):
+        request_schema = re.compile('"\D{3,}')
+        request = request_schema.findall(Param_singleLog)
+        for request in request:
+            return request
     
+    #Function to extract the status of the log
+    def extractStatus(Param_singleLog):
+        status_schema = re.compile(' \d{3}')
+        status = status_schema.findall(Param_singleLog)
+        for status in status:
+            return status
+       
+    #Function to extract the user agent of the log
+    def extractHttpUserAgent(Param_singleLog):
+        http_agent_schema = re.compile(' "-"+ \D{2,}')
+        http_agent = http_agent_schema.findall(Param_singleLog)
+        for http_agent in http_agent:
+            return http_agent
+
+
+    #Save in object
+    # Save into database
+    # Get html page to read log
+    # Filter    
 
 if __name__ == '__main__':
 
